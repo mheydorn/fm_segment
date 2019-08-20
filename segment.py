@@ -10,10 +10,10 @@ from IPython import embed
 import freeze
 
 
-IMAGE_HEIGHT = 96 # Image height
-IMAGE_WIDTH = 96 # Image hidth 
+IMAGE_HEIGHT = 512 # Image height
+IMAGE_WIDTH = 512 # Image hidth 
 CHANNELS = 3 # Number of channels (3 for rgb)
-BATCH_SIZE = 100
+BATCH_SIZE = 50
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 def apply_image_augmentation(image):
@@ -122,8 +122,8 @@ def main():
     counts = [0,0]
 
 
-    dataset_path_train = "/data/fm_tools/autofm/temp13/train"
-    dataset_path_train_masks = "/data/fm_tools/autofm/temp13/masks/train"
+    dataset_path_train = "/data/fm_tools/autofm/wholeImagesBacon/train"
+    dataset_path_train_masks = "/data/fm_tools/autofm/wholeImagesBacon/masks/train"
     classes = sorted(os.walk(dataset_path_train).__next__()[1])
     for label, c in enumerate(classes):
         c_dir = os.path.join(dataset_path_train, c)
@@ -135,11 +135,11 @@ def main():
                 one_hot[label] = 1
                 mask_path = os.path.join(dataset_path_train_masks, c_dir.split("/")[-1], sample)
                 if label == 0:
-                    mask_path = '/data/fm_tools/autofm/temp13/clean_mask.png'
+                    mask_path = '/data/fm_tools/autofm/wholeImagesBacon/clean_mask.png'
                 train_meta_data.append([os.path.join(c_dir, sample), one_hot, mask_path])
 
-    dataset_path_test = "/data/fm_tools/autofm/temp13/test"
-    dataset_path_test_masks = "/data/fm_tools/autofm/temp13/masks/test"
+    dataset_path_test = "/data/fm_tools/autofm/wholeImagesBacon/test"
+    dataset_path_test_masks = "/data/fm_tools/autofm/wholeImagesBacon/masks/test"
     classes = sorted(os.walk(dataset_path_test).__next__()[1])
     for label, c in enumerate(classes):
         c_dir = os.path.join(dataset_path_test, c)
@@ -151,7 +151,7 @@ def main():
                 one_hot[label] = 1  
                 mask_path = os.path.join(dataset_path_test_masks, c_dir.split("/")[-1], sample)
                 if label == 0:
-                    mask_path = '/data/fm_tools/autofm/temp13/clean_mask.png'
+                    mask_path = '/data/fm_tools/autofm/wholeImagesBacon/clean_mask.png'
                 test_meta_data.append([os.path.join(c_dir, sample), one_hot, mask_path])
 
     '''
@@ -223,7 +223,7 @@ def main():
         sess.run(tf.compat.v1.global_variables_initializer())
         sess.run(tf.compat.v1.local_variables_initializer())
 
-        saver.restore(sess, "model1221")
+        saver.restore(sess, "model1322")
         print("Training started")
         for epoch in range(NUM_EPOCHS):
 
@@ -241,11 +241,10 @@ def main():
             try:
                 while True:
                     softmax, images, masks, train_loss, _, pred, accuracy = sess.run([network.softmax, network.original_image, network.mask, network.loss, optimizer, network.predictions, network.accuracy])
-                    embed()
                   
                     train_losses.append(train_loss)    
                     train_accuracies.append(accuracy[0])
-
+                    print("Train accuracy =", "%.3f" % accuracy[0], "Train loss =", train_loss, end='\r')
                     step += 1
             except tf.errors.OutOfRangeError: 
                 #This looks like a hack but this is the correct way to tell when an epoch is complete
@@ -270,7 +269,7 @@ def main():
                     cv2.imshow("softmax", (np.squeeze(softmax[0][:,:,1])*255).astype(np.uint8))
                     cv2.imshow("mask", np.squeeze(masks[0]).astype(np.uint8)*255)
                     cv2.imshow("image", np.squeeze(images[0]).astype(np.uint8)[...,::-1])
-                    cv2.waitKey(0)
+                    cv2.waitKey(1)
                     
                     print("Test accuracy =", "%.3f" % accuracy[0], "Test loss =", test_loss, end='\r')
 
@@ -278,8 +277,8 @@ def main():
                 pass
 
             print("Test accuracy after epoch was", np.mean(test_accuracies))
-            saver.save(sess, "model1221")
-            freeze.create_pb("model1221")
+            saver.save(sess, "model1322")
+            freeze.create_pb("model1322")
 
             print("Checkpoint saved and pb created.")   
 
