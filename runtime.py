@@ -26,7 +26,7 @@ import numpy as np
 from IPython import embed
 
 
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(0)
 
 
 NUM_ROWS = 5
@@ -55,6 +55,7 @@ with tf.Session() as sess:
         # Capture frame-by-frame
         ret, frame = cap.read()
         frame = cv2.resize(frame, (int(96*5), int(96*5)))
+        frame = frame[...,::-1]
         predictionMap = np.zeros((frame.shape[0], frame.shape[1]))
 
 
@@ -72,7 +73,7 @@ with tf.Session() as sess:
 
                 predictions, = sess.run(prob_tensor, {input_node: [img] })
 
-                predictionMap[stepSizeRow * r : stepSizeRow * (r+1) , stepSizeCol * c  : stepSizeCol * (c+1)] = predictions[:,:,0]
+                predictionMap[stepSizeRow * r : stepSizeRow * (r+1) , stepSizeCol * c  : stepSizeCol * (c+1)] = predictions[:,:,1]
 
                 '''
                 cv2.imshow("part", img)

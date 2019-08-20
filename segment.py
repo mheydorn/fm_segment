@@ -240,15 +240,8 @@ def main():
             allLabels = []
             try:
                 while True:
-                    images, masks, train_loss, _, pred, accuracy = sess.run([network.original_image, network.mask, network.loss, optimizer, network.predictions, network.accuracy])
-
-                    '''
-                    cv2.imshow("prediction", np.squeeze(pred[0]).astype(np.uint8)*255)
-                    cv2.imshow("mask", np.squeeze(masks[0]).astype(np.uint8)*255)
-                    cv2.imshow("image", np.squeeze(images[0]).astype(np.uint8)[...,::-1])
-                    cv2.waitKey(0)
-                    '''
-                    print("Train accuracy =", "%.3f" % accuracy[0], "Train loss =", train_loss, end='\r')
+                    softmax, images, masks, train_loss, _, pred, accuracy = sess.run([network.softmax, network.original_image, network.mask, network.loss, optimizer, network.predictions, network.accuracy])
+                    embed()
                   
                     train_losses.append(train_loss)    
                     train_accuracies.append(accuracy[0])
@@ -267,9 +260,19 @@ def main():
             test_accuracies = []
             try:
                 while True:
-                    images, masks, test_loss, accuracy = sess.run([network.original_image, network.mask, network.loss, network.accuracy])
+                    pred, softmax, images, masks, test_loss, accuracy = sess.run([network.predictions, network.softmax, network.original_image, network.mask, network.loss, network.accuracy])
                     print("Test accuracy =", accuracy[0], end='\r')
                     test_accuracies.append(accuracy[0])
+
+
+                    
+                    cv2.imshow("prediction", np.squeeze(pred[0]).astype(np.uint8)*255)
+                    cv2.imshow("softmax", (np.squeeze(softmax[0][:,:,1])*255).astype(np.uint8))
+                    cv2.imshow("mask", np.squeeze(masks[0]).astype(np.uint8)*255)
+                    cv2.imshow("image", np.squeeze(images[0]).astype(np.uint8)[...,::-1])
+                    cv2.waitKey(0)
+                    
+                    print("Test accuracy =", "%.3f" % accuracy[0], "Test loss =", test_loss, end='\r')
 
             except tf.errors.OutOfRangeError: 
                 pass
