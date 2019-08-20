@@ -7,7 +7,7 @@ from tensorflow.compat.v1 import ConfigProto
 from model import *
 import matplotlib.pyplot as plt
 from IPython import embed
-
+import freeze
 
 
 IMAGE_HEIGHT = 96 # Image height
@@ -239,7 +239,7 @@ def main():
             train_accuracies = []
             allLabels = []
             try:
-                while False:
+                while True:
                     images, masks, train_loss, _, pred, accuracy = sess.run([network.original_image, network.mask, network.loss, optimizer, network.predictions, network.accuracy])
 
                     '''
@@ -266,7 +266,7 @@ def main():
 
             test_accuracies = []
             try:
-                while False:
+                while True:
                     images, masks, test_loss, accuracy = sess.run([network.original_image, network.mask, network.loss, network.accuracy])
                     print("Test accuracy =", accuracy[0], end='\r')
                     test_accuracies.append(accuracy[0])
@@ -275,7 +275,7 @@ def main():
                 pass
 
             print("Test accuracy after epoch was", np.mean(test_accuracies))
-            #saver.save(sess, "model1221")
+            saver.save(sess, "model1221")
             freeze.create_pb("model1221")
 
             print("Checkpoint saved and pb created.")   

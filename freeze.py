@@ -5,12 +5,13 @@ import argparse
 import tensorflow as tf
 import tensorflow.compat.v1 as tf1
 import numpy as np
+import remove
 
 dir = os.path.dirname(os.path.realpath(__file__))
 
 def create_pb(modelName):
     pb_name = modelName +".pb"
-    freeze.freeze_graph('./', 
+    freeze_graph('./', 
                         'Softmax',
                         modelName,
                         pb_name)
