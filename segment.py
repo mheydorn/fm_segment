@@ -239,7 +239,7 @@ def main():
             train_accuracies = []
             allLabels = []
             try:
-                while True:
+                while False:
                     images, masks, train_loss, _, pred, accuracy = sess.run([network.original_image, network.mask, network.loss, optimizer, network.predictions, network.accuracy])
 
                     '''
@@ -266,7 +266,7 @@ def main():
 
             test_accuracies = []
             try:
-                while True:
+                while False:
                     images, masks, test_loss, accuracy = sess.run([network.original_image, network.mask, network.loss, network.accuracy])
                     print("Test accuracy =", accuracy[0], end='\r')
                     test_accuracies.append(accuracy[0])
@@ -275,9 +275,8 @@ def main():
                 pass
 
             print("Test accuracy after epoch was", np.mean(test_accuracies))
-            saver.save(sess, "model1221")
-
-            #create_pb("models5/modelAfterEpoch" + str(epoch))
+            #saver.save(sess, "model1221")
+            freeze.create_pb("model1221")
 
             print("Checkpoint saved and pb created.")   
 
