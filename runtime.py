@@ -26,7 +26,7 @@ import numpy as np
 from IPython import embed
 
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2)
 
 
 NUM_ROWS = 5
